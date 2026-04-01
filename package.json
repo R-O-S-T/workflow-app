@@ -1,0 +1,16 @@
+{
+  "name": "workflow-app",
+  "private": true,
+  "workspaces": ["packages/*", "apps/*"],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @workflow/server dev\" \"pnpm --filter @workflow/client dev\"",
+    "build": "pnpm --filter @workflow/shared build && pnpm --filter @workflow/server build && pnpm --filter @workflow/client build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.4.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["better-sqlite3", "esbuild", "es5-ext"]
+  }
+}
