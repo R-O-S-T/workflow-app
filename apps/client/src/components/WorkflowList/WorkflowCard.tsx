@@ -55,7 +55,7 @@ export function WorkflowCard({ workflow, onDelete, onDuplicate, onRename }: Prop
       </div>
 
       <button
-        onClick={() => navigate(`/workflow/${workflow.id}`)}
+        onClick={() => navigate(`/app/workflow/${workflow.id}`)}
         className="mt-auto w-full py-1.5 text-xs font-medium text-accent border border-accent/30 rounded-lg hover:bg-accent hover:text-white transition-colors"
       >
         Open

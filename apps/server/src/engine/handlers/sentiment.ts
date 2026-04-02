@@ -12,12 +12,9 @@ export async function execute(
   const text = String(config.text ?? "");
 
   const lower = text.toLowerCase();
-  let score = 0.5;
-  for (const w of POSITIVE) if (lower.includes(w)) score = Math.min(1, score + 0.08);
-  for (const w of NEGATIVE) if (lower.includes(w)) score = Math.max(0, score - 0.08);
-  score = Math.min(1, Math.max(0, score + ((text.length % 7) - 3) * 0.01));
-
-  const label = score >= 0.6 ? "positive" : score <= 0.4 ? "negative" : "neutral";
+  const hasPositive = POSITIVE.some((w) => lower.includes(w));
+  const score = hasPositive ? 0.9 : 0.4;
+  const label = hasPositive ? "positive" : "negative";
 
   return {
     output: {

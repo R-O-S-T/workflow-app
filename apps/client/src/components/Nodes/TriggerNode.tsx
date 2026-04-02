@@ -4,6 +4,7 @@ import { useWorkflowStore } from "../../store/workflowStore";
 import { useExecutionStore } from "../../store/executionStore";
 import { NodeStatusBadge } from "./NodeStatusBadge";
 import { IOPills } from "./IOPills";
+import { ConfigSummary } from "./ConfigSummary";
 
 export function TriggerNode({ id, data, selected }: NodeProps) {
   const selectNode = useWorkflowStore((s) => s.selectNode);
@@ -32,6 +33,7 @@ export function TriggerNode({ id, data, selected }: NodeProps) {
           <div className="text-sm font-medium text-white truncate">{label}</div>
         </div>
       </div>
+      <ConfigSummary definitionId={data.definitionId as string} config={(data.config as Record<string, unknown>) ?? {}} />
       <IOPills outputs={def?.outputs} />
       <Handle type="source" position={Position.Bottom} className="!w-3 !h-3 !bg-surface-3 !border-2" style={{ borderColor: color }} />
     </div>

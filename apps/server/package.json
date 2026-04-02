@@ -8,10 +8,11 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@workflow/shared": "workspace:*",
     "@libsql/client": "^0.6.2",
+    "@workflow/shared": "workspace:*",
     "drizzle-orm": "^0.30.10",
     "express": "^4.19.2",
+    "viem": "^2.47.6",
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -205,7 +205,7 @@ export const actions: NodeDefinition[] = [
       { key: "status", label: "Status", type: "string" },
     ],
     configFields: [
-      { key: "fromToken", label: "From Token", type: "token-search", required: true },
+      { key: "fromToken", label: "From Token", type: "wallet-token-select", required: true },
       { key: "fromTokenName", label: "From Token Name", type: "text" },
       { key: "toToken", label: "To Token", type: "token-search", required: true },
       { key: "toTokenName", label: "To Token Name", type: "text" },

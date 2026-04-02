@@ -24,7 +24,20 @@ export const api = {
     duplicate: (id: string) => request<FullWorkflow>(`/workflows/${id}/duplicate`, { method: "POST" }),
     run: (id: string) => request<unknown>(`/workflows/${id}/run`, { method: "POST" }),
   },
+  wallet: {
+    status: () => request<WalletStatus>("/wallet"),
+  },
 };
+
+export interface WalletStatus {
+  configured: boolean;
+  address: string | null;
+  balance: string | null;
+  chain: { chainId: number; name: string; networkMode: string };
+  networkMode: string;
+  dryRun: boolean;
+  note?: string;
+}
 
 export interface WorkflowSummary {
   id: string;

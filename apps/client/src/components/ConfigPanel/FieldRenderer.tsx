@@ -74,8 +74,8 @@ export function FieldRenderer({ field, value, onChange, upstreamNodes }: Props) 
     setDropdownOpen(false);
   }
 
-  // Use ExpressionInput for text/textarea when upstream nodes exist
-  const useExprInput = hasUpstream && (field.type === "text" || field.type === "textarea");
+  // Use ExpressionInput for text/textarea when upstream nodes exist OR the value already has expressions
+  const useExprInput = (hasUpstream || hasExpressions) && (field.type === "text" || field.type === "textarea");
 
   return (
     <div>

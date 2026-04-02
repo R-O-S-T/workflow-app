@@ -9,7 +9,8 @@ export function CustomEdge({
   sourcePosition,
   targetPosition,
   selected,
-  ...props
+  markerEnd,
+  markerStart,
 }: EdgeProps) {
   const [edgePath] = getBezierPath({ sourceX, sourceY, sourcePosition, targetX, targetY, targetPosition });
 
@@ -19,13 +20,14 @@ export function CustomEdge({
       <BaseEdge
         id={id}
         path={edgePath}
-        interactionWidth={20}
+        interactionWidth={40}
+        markerEnd={markerEnd}
+        markerStart={markerStart}
         style={{
           stroke: selected ? "#E8652C" : "#333333",
           strokeWidth: selected ? 2.5 : 2,
           strokeDasharray: selected ? "0" : "6 4",
         }}
-        {...props}
       />
       {/* Glow when selected */}
       {selected && (

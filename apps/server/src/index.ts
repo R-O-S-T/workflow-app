@@ -4,6 +4,7 @@ import { executionsRouter } from "./routes/executions.js";
 import { registryRouter } from "./routes/registry.js";
 import { polymarketRouter } from "./routes/polymarket.js";
 import { tokensRouter } from "./routes/tokens.js";
+import { walletRouter } from "./routes/wallet.js";
 import { initDb } from "./db/client.js";
 import { startScheduler } from "./engine/scheduler.js";
 
@@ -15,6 +16,7 @@ app.use("/api", executionsRouter);
 app.use("/api/registry", registryRouter);
 app.use("/api/polymarket", polymarketRouter);
 app.use("/api/tokens", tokensRouter);
+app.use("/api/wallet", walletRouter);
 
 const PORT = 3001;
 

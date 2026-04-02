@@ -1,6 +1,21 @@
 import type { HandlerResult } from "./_base.js";
-export async function execute(config: Record<string, unknown>, _inputs: Record<string, unknown>): Promise<HandlerResult> {
-  await delay(500);
-  return { output: { token: config.token ?? "ETH", currentPrice: 3200.50, targetPrice: config.price ?? 3000, direction: config.direction ?? "above", triggered: true } };
+import { fetchUsdPrice } from "../priceCache.js";
+
+export async function execute(config: Record<string, unknown>): Promise<HandlerResult> {
+  const token = String(config.token ?? "ETH").toUpperCase();
+  const targetPrice = Number(config.price ?? 0);
+  const direction = String(config.direction ?? "above");
+
+  const currentPrice = await fetchUsdPrice(token);
+  if (currentPrice === null) {
+    return { output: { token, error: `Could not fetch price for ${token}`, triggered: false } };
+  }
+
+  const triggered = direction === "above"
+    ? currentPrice > targetPrice
+    : currentPrice < targetPrice;
+
+  return {
+    output: { token, currentPrice, targetPrice, direction, triggered },
+  };
 }
-function delay(ms: number) { return new Promise(r => setTimeout(r, ms)); }

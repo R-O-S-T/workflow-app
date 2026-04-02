@@ -18,8 +18,8 @@ export function EditorPage() {
   useAutoSave();
 
   useEffect(() => {
-    if (!id) { navigate("/"); return; }
-    loadWorkflow(id).catch(() => navigate("/"));
+    if (!id) { navigate("/app"); return; }
+    loadWorkflow(id).catch(() => navigate("/app"));
     loadExecutions(id);
   }, [id]);
 

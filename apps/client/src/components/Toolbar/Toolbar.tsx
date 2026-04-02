@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useWorkflowStore } from "../../store/workflowStore";
 import { useExecutionStore } from "../../store/executionStore";
+import { WalletPanel } from "../Wallet/WalletPanel";
 
 export function Toolbar() {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ export function Toolbar() {
 
   return (
     <header className="h-11 flex-shrink-0 bg-surface-0 border-b border-border-default flex items-center px-4 gap-3">
-      <button onClick={() => navigate("/")} className="text-gray-500 hover:text-white transition-colors">
+      <button onClick={() => navigate("/app")} className="text-gray-500 hover:text-white transition-colors">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
@@ -36,6 +37,8 @@ export function Toolbar() {
       <div className="flex-1" />
 
       {saveLabel && <span className={`text-xs ${saveLabelColor} transition-colors`}>{saveLabel}</span>}
+
+      <WalletPanel />
 
       <button
         onClick={toggleActive}

@@ -4,6 +4,7 @@ import { useUIStore } from "../../store/uiStore";
 import { FieldRenderer } from "./FieldRenderer";
 import { MarketSearch } from "./MarketSearch";
 import { TokenSearch } from "./TokenSearch";
+import { WalletTokenSelect } from "./WalletTokenSelect";
 import { TemplatePresets } from "./TemplatePresets";
 import { getUpstreamNodes } from "../../lib/getUpstreamNodes";
 
@@ -110,6 +111,29 @@ export function ConfigPanel() {
               // Hide the marketQuestion field (it's set automatically by MarketSearch)
               if (defId === "polymarket" && field.key === "marketQuestion") {
                 return null;
+              }
+              // Wallet token select (from connected wallet balances)
+              if (field.type === "wallet-token-select") {
+                const nameKey = field.key + "Name";
+                return (
+                  <div key={field.key}>
+                    <label className="block text-xs font-medium text-gray-400 mb-1">
+                      {field.label}
+                      {field.required && <span className="text-accent ml-0.5">*</span>}
+                    </label>
+                    <WalletTokenSelect
+                      value={String(config[field.key] ?? "")}
+                      displayName={String(config[nameKey] ?? "")}
+                      onSelect={(token) => {
+                        updateNodeConfig(node!.id, {
+                          ...config,
+                          [field.key]: token ? token.symbol : "",
+                          [nameKey]: token ? token.name : "",
+                        });
+                      }}
+                    />
+                  </div>
+                );
               }
               // Token search fields
               if (field.type === "token-search") {

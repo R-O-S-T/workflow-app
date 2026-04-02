@@ -86,6 +86,7 @@ export const ExpressionInput = forwardRef<ExpressionInputHandle, Props>(
     const divRef = useRef<HTMLDivElement>(null);
     const nodeMap = useNodeMap();
     const lastValueRef = useRef(value);
+    const isFocusedRef = useRef(false);
 
     /** Render string value → DOM with pills */
     const renderDom = useCallback(
@@ -130,16 +131,18 @@ export const ExpressionInput = forwardRef<ExpressionInputHandle, Props>(
       [nodeMap]
     );
 
-    // Initial render + sync on external value changes
+    // Initial render + sync on external value changes (but NOT while user is editing)
     useEffect(() => {
+      if (isFocusedRef.current) return; // Don't clobber DOM while user is typing
       if (value !== lastValueRef.current || !divRef.current?.childNodes.length) {
         renderDom(value);
         lastValueRef.current = value;
       }
     }, [value, renderDom]);
 
-    // Re-render pills when nodeMap changes (node renamed, etc.)
+    // Re-render pills when nodeMap changes (node renamed, etc.) — only when not focused
     useEffect(() => {
+      if (isFocusedRef.current) return;
       const currentVal = divRef.current ? domToValue(divRef.current) : "";
       if (currentVal === value) renderDom(value);
     }, [nodeMap, renderDom, value]);
@@ -184,6 +187,20 @@ export const ExpressionInput = forwardRef<ExpressionInputHandle, Props>(
       }
     }
 
+    function handleFocus() {
+      isFocusedRef.current = true;
+    }
+
+    function handleBlur() {
+      isFocusedRef.current = false;
+      // Re-render pills on blur to restore clean pill display
+      if (divRef.current) {
+        const currentVal = domToValue(divRef.current);
+        lastValueRef.current = currentVal;
+        renderDom(currentVal);
+      }
+    }
+
     /** Expose insertReference to parent via ref */
     useImperativeHandle(ref, () => ({
       insertReference(nodeId: string, key: string) {
@@ -223,6 +240,8 @@ export const ExpressionInput = forwardRef<ExpressionInputHandle, Props>(
           onClick={handleClick}
           onPaste={handlePaste}
           onKeyDown={handleKeyDown}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           className={className}
         />
         {isEmpty && placeholder && (

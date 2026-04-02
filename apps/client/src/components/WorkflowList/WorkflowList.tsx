@@ -1,8 +1,18 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { api, type WorkflowSummary } from "../../api/client";
 import { WorkflowCard } from "./WorkflowCard";
+import { templates, type WorkflowTemplate } from "../../data/templates";
+
+const categoryColors: Record<string, string> = {
+  trading: "#3B82F6",
+  alerts: "#F59E0B",
+  social: "#8B5CF6",
+  defi: "#10B981",
+};
 
 export function WorkflowList() {
+  const navigate = useNavigate();
   const [workflows, setWorkflows] = useState<WorkflowSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -22,13 +32,24 @@ export function WorkflowList() {
   useEffect(() => { load(); }, []);
 
   async function handleCreate() {
-    const name = prompt("Workflow name:", "New Workflow");
-    if (!name?.trim()) return;
     try {
-      const created = await api.workflows.create(name.trim());
-      setWorkflows((prev) => [created, ...prev]);
+      const created = await api.workflows.create("New Workflow");
+      navigate(`/app/workflow/${created.id}`);
     } catch (e) {
       alert("Failed to create: " + String(e));
+    }
+  }
+
+  async function handleUseTemplate(template: WorkflowTemplate) {
+    try {
+      const created = await api.workflows.create(template.name);
+      await api.workflows.update(created.id, {
+        nodes: template.nodes,
+        edges: template.edges,
+      });
+      navigate(`/app/workflow/${created.id}`);
+    } catch (e) {
+      alert("Failed to create from template: " + String(e));
     }
   }
 
@@ -77,6 +98,33 @@ export function WorkflowList() {
       </header>
 
       <main className="px-8 py-6">
+        {/* Templates */}
+        <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-3">Templates</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
+          {templates.map((t, i) => (
+            <button
+              key={i}
+              onClick={() => handleUseTemplate(t)}
+              className="text-left p-3 bg-surface-1 border border-border-default rounded-lg hover:border-accent/50 hover:bg-surface-2 transition-all group"
+            >
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="text-lg">{t.icon}</span>
+                <span
+                  className="text-[9px] uppercase font-semibold tracking-wider px-1.5 py-0.5 rounded"
+                  style={{ color: categoryColors[t.category], backgroundColor: categoryColors[t.category] + "18" }}
+                >
+                  {t.category}
+                </span>
+              </div>
+              <div className="text-xs font-medium text-white group-hover:text-accent transition-colors">{t.name}</div>
+              <div className="text-[10px] text-gray-500 mt-0.5 line-clamp-2">{t.description}</div>
+              <div className="text-[10px] text-gray-600 mt-1.5">
+                {t.nodes.length} nodes
+              </div>
+            </button>
+          ))}
+        </div>
+
         <h2 className="text-sm font-medium text-gray-500 uppercase tracking-wider mb-4">Your workflows</h2>
 
         {loading && (
