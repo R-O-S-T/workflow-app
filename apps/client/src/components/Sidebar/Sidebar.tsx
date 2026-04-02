@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { triggers, actions } from "@workflow/shared";
 import { useUIStore } from "../../store/uiStore";
 import { SearchBar } from "./SearchBar";
@@ -7,8 +8,25 @@ import type { NodeCategory } from "@workflow/shared";
 
 export function Sidebar() {
   const { sidebarTab, sidebarFilter, sidebarSearch, setSidebarTab, setSidebarFilter, setSidebarSearch } = useUIStore();
+  const [collapsed, setCollapsed] = useState(false);
 
   const items = sidebarTab === "trigger" ? triggers : actions;
+
+  if (collapsed) {
+    return (
+      <aside className="w-10 flex-shrink-0 bg-surface-0 border-r border-border-default flex flex-col items-center py-3">
+        <button
+          onClick={() => setCollapsed(false)}
+          className="text-gray-500 hover:text-white transition-colors"
+          title="Expand sidebar"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </aside>
+    );
+  }
 
   const filtered = items.filter((item) => {
     if (sidebarFilter !== "all" && item.category !== (sidebarFilter as NodeCategory)) return false;
@@ -21,7 +39,18 @@ export function Sidebar() {
     <aside className="w-64 flex-shrink-0 bg-surface-0 border-r border-border-default flex flex-col h-full">
       {/* Header */}
       <div className="p-3 border-b border-border-default">
-        <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Nodes</h2>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Nodes</h2>
+          <button
+            onClick={() => setCollapsed(true)}
+            className="text-gray-500 hover:text-white transition-colors"
+            title="Collapse sidebar"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
         {/* Tab switcher */}
         <div className="flex bg-surface-2 rounded-lg p-0.5 mb-3">
           {(["trigger", "action"] as const).map((tab) => (

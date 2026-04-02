@@ -4,7 +4,7 @@ import { useExecutionStore } from "../../store/executionStore";
 
 export function Toolbar() {
   const navigate = useNavigate();
-  const { workflow, saveStatus } = useWorkflowStore();
+  const { workflow, saveStatus, toggleActive } = useWorkflowStore();
   const { isRunning, runWorkflow, toggleHistory, showHistory } = useExecutionStore();
 
   async function handleRun() {
@@ -36,6 +36,19 @@ export function Toolbar() {
       <div className="flex-1" />
 
       {saveLabel && <span className={`text-xs ${saveLabelColor} transition-colors`}>{saveLabel}</span>}
+
+      <button
+        onClick={toggleActive}
+        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg transition-colors border ${
+          workflow?.isActive
+            ? "bg-green-900/40 border-green-600 text-green-400"
+            : "border-border-default text-gray-400 hover:text-white"
+        }`}
+        title={workflow?.isActive ? "Workflow is active — polling triggers every 30s" : "Activate to enable automatic trigger polling"}
+      >
+        <div className={`w-2 h-2 rounded-full ${workflow?.isActive ? "bg-green-400 animate-pulse" : "bg-gray-600"}`} />
+        {workflow?.isActive ? "Active" : "Inactive"}
+      </button>
 
       <button
         onClick={toggleHistory}

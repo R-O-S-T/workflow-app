@@ -13,6 +13,7 @@ import {
 import { registry } from "@workflow/shared";
 import type { NodeRole } from "@workflow/shared";
 import { api, type FullWorkflow, type WorkflowNodeData, type WorkflowEdgeData } from "../api/client";
+import { useToastStore } from "../components/Toast/Toast";
 
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 
@@ -36,6 +37,7 @@ interface WorkflowStore {
   assignDefinition: (nodeId: string, definitionId: string) => void;
   loadWorkflow: (id: string) => Promise<void>;
   saveWorkflow: () => Promise<void>;
+  toggleActive: () => Promise<void>;
 }
 
 function domainNodesToFlow(domainNodes: WorkflowNodeData[]): Node[] {
@@ -176,9 +178,27 @@ export const useWorkflowStore = create<WorkflowStore>((set, get) => ({
         edges: flowEdgesToDomain(edges),
       });
       set({ workflow: updated, isDirty: false, saveStatus: "saved" });
+      useToastStore.getState().addToast("Workflow saved", "success");
       setTimeout(() => set((s) => (s.saveStatus === "saved" ? { saveStatus: "idle" } : {})), 2000);
     } catch {
       set({ saveStatus: "error" });
+      useToastStore.getState().addToast("Failed to save", "error");
+    }
+  },
+
+  toggleActive: async () => {
+    const { workflow } = get();
+    if (!workflow) return;
+    const newActive = !workflow.isActive;
+    try {
+      const updated = await api.workflows.update(workflow.id, { isActive: newActive });
+      set({ workflow: updated });
+      useToastStore.getState().addToast(
+        newActive ? "Workflow activated — polling started" : "Workflow deactivated",
+        newActive ? "success" : "info"
+      );
+    } catch {
+      useToastStore.getState().addToast("Failed to toggle workflow", "error");
     }
   },
 }));

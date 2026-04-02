@@ -24,7 +24,7 @@ export interface NodeDefinition {
 export interface ConfigField {
   key: string;
   label: string;
-  type: "text" | "number" | "toggle" | "select" | "textarea";
+  type: "text" | "number" | "toggle" | "select" | "textarea" | "token-search";
   placeholder?: string;
   required?: boolean;
   options?: { label: string; value: string }[];

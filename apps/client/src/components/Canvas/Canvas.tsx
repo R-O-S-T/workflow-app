@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { ReactFlow, Background, MiniMap, Controls, BackgroundVariant, useReactFlow, ReactFlowProvider } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { nodeTypes } from "../Nodes/nodeTypes";
@@ -29,6 +29,17 @@ function CanvasInner() {
     },
     [screenToFlowPosition, addNode]
   );
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+        e.preventDefault();
+        useWorkflowStore.getState().saveWorkflow();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <div ref={wrapperRef} className="w-full h-full">

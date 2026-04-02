@@ -145,6 +145,48 @@ export const triggers: NodeDefinition[] = [
       { key: "secret", label: "Secret", type: "text", placeholder: "auto-generated" },
     ],
   },
+  {
+    id: "polymarket",
+    name: "Polymarket",
+    description: "Triggers when a prediction market reaches a price threshold",
+    icon: "\uD83D\uDCC0",
+    color: "#0052FF",
+    category: "off-chain",
+    role: "trigger",
+    outputs: [
+      { key: "question", label: "Question", type: "string" },
+      { key: "outcome", label: "Outcome", type: "string" },
+      { key: "currentPrice", label: "Current Price", type: "number" },
+      { key: "threshold", label: "Threshold", type: "number" },
+      { key: "direction", label: "Direction", type: "string" },
+      { key: "marketUrl", label: "Market URL", type: "string" },
+    ],
+    configFields: [
+      { key: "marketId", label: "Market", type: "text", placeholder: "Search and select a market...", required: true },
+      { key: "marketQuestion", label: "Market Question", type: "text", placeholder: "Selected market question" },
+      {
+        key: "outcome",
+        label: "Outcome",
+        type: "select",
+        options: [
+          { label: "Yes", value: "Yes" },
+          { label: "No", value: "No" },
+        ],
+        defaultValue: "Yes",
+      },
+      { key: "threshold", label: "Threshold (%)", type: "number", placeholder: "65" },
+      {
+        key: "direction",
+        label: "Direction",
+        type: "select",
+        options: [
+          { label: "Above", value: "above" },
+          { label: "Below", value: "below" },
+        ],
+        defaultValue: "above",
+      },
+    ],
+  },
 ];
 
 export const actions: NodeDefinition[] = [
@@ -163,8 +205,10 @@ export const actions: NodeDefinition[] = [
       { key: "status", label: "Status", type: "string" },
     ],
     configFields: [
-      { key: "fromToken", label: "From Token", type: "text", placeholder: "ETH" },
-      { key: "toToken", label: "To Token", type: "text", placeholder: "USDC" },
+      { key: "fromToken", label: "From Token", type: "token-search", required: true },
+      { key: "fromTokenName", label: "From Token Name", type: "text" },
+      { key: "toToken", label: "To Token", type: "token-search", required: true },
+      { key: "toTokenName", label: "To Token Name", type: "text" },
       { key: "amount", label: "Amount", type: "number", placeholder: "0" },
       { key: "slippage", label: "Slippage %", type: "number", placeholder: "0.5", defaultValue: 0.5 },
     ],
@@ -274,6 +318,22 @@ export const actions: NodeDefinition[] = [
         defaultValue: "==",
       },
       { key: "value", label: "Value", type: "text", placeholder: "compare value" },
+    ],
+  },
+  {
+    id: "log",
+    name: "Log Output",
+    description: "Echoes its resolved message — useful for testing expression resolution",
+    icon: "\uD83D\uDCCB",
+    color: "#6B7280",
+    category: "off-chain",
+    role: "action",
+    outputs: [
+      { key: "message", label: "Message", type: "string" },
+      { key: "timestamp", label: "Timestamp", type: "string" },
+    ],
+    configFields: [
+      { key: "message", label: "Message", type: "textarea", placeholder: "Use { } to reference upstream output", required: true },
     ],
   },
   {

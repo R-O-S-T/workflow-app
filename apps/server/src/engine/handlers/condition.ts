@@ -6,8 +6,8 @@ export async function execute(config: Record<string, unknown>, inputs: Record<st
   const target = config.value;
   const actual = field.split(".").reduce((obj: unknown, key) => (obj as Record<string, unknown>)?.[key], inputs);
   let result = false;
-  if (operator === "==") result = actual == target;
-  else if (operator === "!=") result = actual != target;
+  if (operator === "==") result = String(actual) === String(target);
+  else if (operator === "!=") result = String(actual) !== String(target);
   else if (operator === ">") result = Number(actual) > Number(target);
   else if (operator === "<") result = Number(actual) < Number(target);
   else if (operator === "contains") result = String(actual).includes(String(target));

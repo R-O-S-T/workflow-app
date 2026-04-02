@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { api } from "../api/client";
+import { useToastStore } from "../components/Toast/Toast";
 
 export type StepStatus = "pending" | "running" | "completed" | "failed" | "skipped";
 
@@ -71,6 +72,11 @@ export const useExecutionStore = create<ExecutionStore>((set, get) => ({
           if (updated.status === "completed" || updated.status === "failed") {
             clearInterval(pollInterval);
             set({ isRunning: false });
+            if (updated.status === "completed") {
+              useToastStore.getState().addToast("Workflow executed successfully", "success");
+            } else {
+              useToastStore.getState().addToast("Execution failed", "error");
+            }
             // Refresh history
             get().loadExecutions(workflowId);
           }

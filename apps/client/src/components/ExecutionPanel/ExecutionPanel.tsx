@@ -57,6 +57,12 @@ function StepRow({ step, nodeName }: { step: ExecutionStep; nodeName: string }) 
               <pre className="text-[10px] text-red-300 bg-surface-0 rounded p-2 whitespace-pre-wrap break-all">{step.error}</pre>
             </div>
           )}
+          {step.output && typeof step.output.message === "string" && (
+            <div className="px-2 py-1.5 bg-surface-0 rounded border border-border-subtle">
+              <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Message</div>
+              <div className="text-xs text-white whitespace-pre-wrap break-all">{step.output.message}</div>
+            </div>
+          )}
           <div>
             <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Input</div>
             <JsonBlock data={step.input} />

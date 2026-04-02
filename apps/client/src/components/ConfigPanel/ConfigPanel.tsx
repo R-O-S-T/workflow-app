@@ -2,6 +2,8 @@ import { registry } from "@workflow/shared";
 import { useWorkflowStore } from "../../store/workflowStore";
 import { useUIStore } from "../../store/uiStore";
 import { FieldRenderer } from "./FieldRenderer";
+import { MarketSearch } from "./MarketSearch";
+import { TokenSearch } from "./TokenSearch";
 import { TemplatePresets } from "./TemplatePresets";
 import { getUpstreamNodes } from "../../lib/getUpstreamNodes";
 
@@ -81,15 +83,71 @@ export function ConfigPanel() {
         {def?.configFields?.length ? (
           <div className="space-y-3">
             <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Configuration</div>
-            {def.configFields.map((field) => (
-              <FieldRenderer
-                key={field.key}
-                field={field}
-                value={config[field.key] ?? field.defaultValue}
-                onChange={handleFieldChange}
-                upstreamNodes={field.type === "text" || field.type === "textarea" ? upstreamNodes : undefined}
-              />
-            ))}
+            {def.configFields.map((field) => {
+              // Special: Polymarket market selector
+              if (defId === "polymarket" && field.key === "marketId") {
+                return (
+                  <div key={field.key}>
+                    <label className="block text-xs font-medium text-gray-400 mb-1">
+                      {field.label}
+                      {field.required && <span className="text-accent ml-0.5">*</span>}
+                    </label>
+                    <MarketSearch
+                      value={String(config.marketId ?? "")}
+                      questionValue={String(config.marketQuestion ?? "")}
+                      onSelect={(market) => {
+                        // Batch both fields in one update to avoid stale closure
+                        updateNodeConfig(node!.id, {
+                          ...config,
+                          marketId: market.id ? (market.conditionId || market.id) : "",
+                          marketQuestion: market.id ? market.question : "",
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              }
+              // Hide the marketQuestion field (it's set automatically by MarketSearch)
+              if (defId === "polymarket" && field.key === "marketQuestion") {
+                return null;
+              }
+              // Token search fields
+              if (field.type === "token-search") {
+                const nameKey = field.key + "Name";
+                return (
+                  <div key={field.key}>
+                    <label className="block text-xs font-medium text-gray-400 mb-1">
+                      {field.label}
+                      {field.required && <span className="text-accent ml-0.5">*</span>}
+                    </label>
+                    <TokenSearch
+                      value={String(config[field.key] ?? "")}
+                      displayName={String(config[nameKey] ?? "")}
+                      onSelect={(token) => {
+                        updateNodeConfig(node!.id, {
+                          ...config,
+                          [field.key]: token ? token.symbol : "",
+                          [nameKey]: token ? token.name : "",
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              }
+              // Hide auto-set token name fields
+              if (field.key === "fromTokenName" || field.key === "toTokenName") {
+                return null;
+              }
+              return (
+                <FieldRenderer
+                  key={field.key}
+                  field={field}
+                  value={config[field.key] ?? field.defaultValue}
+                  onChange={handleFieldChange}
+                  upstreamNodes={field.type === "text" || field.type === "textarea" ? upstreamNodes : undefined}
+                />
+              );
+            })}
           </div>
         ) : (
           <div className="text-sm text-gray-600 text-center py-4">No configuration required</div>
